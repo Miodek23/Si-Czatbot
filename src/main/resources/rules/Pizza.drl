@@ -5,7 +5,8 @@ import pl.poznan.put.cs.si.puttalky.Zamowienie;
 import pl.poznan.put.cs.si.puttalky.Ciasto;
 import pl.poznan.put.cs.si.puttalky.Dodatek;
 import pl.poznan.put.cs.si.puttalky.BazaWiedzy;
-import java.util.Set;
+import java.util.Set
+import java.util.HashSet;
 
 
 /** Author: agalawrynowicz<br>
@@ -36,13 +37,19 @@ rule "Podaj dodatki"
 		  dodatek.setMonit("Jaki dodatek powinna zawierać Twoja pizza?:\n");
 		  dodatek.zadajPytanie();
 		  parser.przetworzOdpowiedz();
-		 
+
+        Set<String> uri = new HashSet<String>();
 		for (String slowo : parser.getSlowaKluczowe()){
-			for (String uriKlasy : baza.dopasujDodatek(slowo)) { 
+			for (String uriKlasy : baza.dopasujDodatek(slowo)) {
 		        insert(new Fakt("dodatek", uriKlasy));
-		    } 
+		        uri.add(uriKlasy);
+		    }
 		}
-		    		
+
+        for (String slowo : parser.getSlowaKluczowe()){
+        	insert(new Fakt("dodatek", slowo));
+        }
+
 		//@TODO	brak dopasowania
 		update(dodatek);
 end
@@ -97,8 +104,10 @@ rule "Polecana pizza"
 		    }
 		}
 		else {
-			System.out.println(pizza.getBrakDopasowania());
-	    }
+			//System.out.println(pizza.getBrakDopasowania());
+	        System.out.println("Polecam pizzę własną z dodatkiem :" + $dodatek.getWartosc());
+            insert(new Fakt("pizza_propozycja", "Pizza własna"));
+        }
 
 end
 
