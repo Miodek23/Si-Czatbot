@@ -34,12 +34,18 @@ rule "Podaj dodatki"
 		parser : Parser()
 		baza : BazaWiedzy()
 	then
-		  dodatek.setMonit("Jaki dodatek powinna zawierać Twoja pizza?:\n");
+		  dodatek.setMonit("Jaki dodatek powinna zawierać Twoja pizza lub jaka konkretna pizze chcesz zamowic?:\n");
 		  dodatek.zadajPytanie();
 		  parser.przetworzOdpowiedz();
 
         Set<String> uri = new HashSet<String>();
 		for (String slowo : parser.getSlowaKluczowe()){
+
+			for (String uriKlasy : baza.dopasujPizze(slowo)) {
+				insert(new Fakt("pizza_propozycja", uriKlasy));
+		        uri.add(uriKlasy);
+		    }
+
 			for (String uriKlasy : baza.dopasujDodatek(slowo)) {
 		        insert(new Fakt("dodatek", uriKlasy));
 		        uri.add(uriKlasy);
@@ -79,6 +85,14 @@ rule "Podaj rodzaj ciasta"
 		update(ciasto);
 end
 
+rule "Bylo szukane po pizzy"
+    when
+		Fakt(nazwa == "pizza_propozycja") &&
+        $pizza_propozycja : Fakt( nazwa == "pizza_propozycja")
+    then
+	    System.out.println("Polecam pizzę: "+$pizza_propozycja.getWartosc().split("#")[1]);
+end
+
 rule "Polecana pizza"
 	salience 1
 	
@@ -91,21 +105,19 @@ rule "Polecana pizza"
 		baza: BazaWiedzy()
 		pizza: Pizza()
 	then
-
-		Set<String> pizze = baza.wyszukajPizzePoDodatkach($dodatek.getWartosc());
-            
-        if (pizze.size()>1){            		
+        Set<String> pizze = baza.wyszukajPizzePoDodatkach($dodatek.getWartosc());
+        if (pizze.size()>1){
 			for (String nazwaPizzy : pizze) {
 				insert(new Fakt("pizza_propozycja", nazwaPizzy));
 		    	//System.out.println();
 		    	if (!nazwaPizzy.equals("Nothing")){
-		       	   System.out.println("Polecam pizzę:"+nazwaPizzy);
+		       	   System.out.println("Polecam pizzę: "+nazwaPizzy);
 		       	}
 		    }
 		}
 		else {
 			//System.out.println(pizza.getBrakDopasowania());
-	        System.out.println("Polecam pizzę własną z dodatkiem :" + $dodatek.getWartosc());
+	        System.out.println("Polecam pizzę własną z dodatkiem: " + $dodatek.getWartosc());
             insert(new Fakt("pizza_propozycja", "Pizza własna"));
         }
 
