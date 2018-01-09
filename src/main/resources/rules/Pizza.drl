@@ -42,9 +42,8 @@ rule "Podaj dodatki"
 		for (String slowo : parser.getSlowaKluczowe()){
 
 			for (String uriKlasy : baza.dopasujPizze(slowo)) {
-				insert(new Fakt("pizza_propozycja", uriKlasy));
+				insert(new Fakt("pizza_propozycja", uriKlasy+"asdf"));
 		        uri.add(uriKlasy);
-		        System.out.println(slowo);
 		    }
 
 			for (String uriKlasy : baza.dopasujDodatek(slowo)) {
@@ -89,9 +88,15 @@ end
 rule "Bylo szukane po pizzy"
     when
 		Fakt(nazwa == "pizza_propozycja") &&
-        $pizza_propozycja : Fakt(nazwa == "pizza_propozycja")
+        $pizza_propozycja : Fakt( nazwa == "pizza_propozycja")
+
     then
-	    System.out.println("Zaznaczam pizzę: "+$pizza_propozycja.getWartosc().split("#")[1]);
+    String[] check = $pizza_propozycja.getWartosc().split("asdf");
+    if(check.length>0){
+        String[] parts = check[0].split("#");
+        if(parts.length>1)
+	        System.out.println("Zaznaczam pizzę: "+parts[1]);
+	}
 end
 
 rule "Polecana pizza"
@@ -121,9 +126,7 @@ rule "Polecana pizza"
 	        System.out.println("Polecam pizzę własną z dodatkiem: " + $dodatek.getWartosc());
             insert(new Fakt("pizza_propozycja", "Pizza własna"));
         }
-
 end
-
 
 rule "zakończenie"
 

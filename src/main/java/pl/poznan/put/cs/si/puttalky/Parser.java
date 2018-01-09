@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import morfologik.stemming.IStemmer;
 import morfologik.stemming.WordData;
 import morfologik.stemming.polish.PolishStemmer;
@@ -25,7 +27,6 @@ public class Parser {
 	}
 
 	public String getWypowiedz() {
-
 		return wypowiedz;
 	}
 
@@ -54,13 +55,32 @@ public class Parser {
 		setSlowaKluczowe(parsuj(buffer.toString()));
 	}
 
+	public boolean wege(String wypowiedz){
+		String[] slowa = wypowiedz.split(" ");
+		ArrayList<String> tokeny = new ArrayList<String>();
+		PolishStemmer s = new PolishStemmer();
+
+		for (String slowo : slowa){
+			String token = new String("");
+			if (stem(s, slowo).length>1)
+				token = stem(s, slowo)[0];
+			else
+				token = slowo.toLowerCase();
+			tokeny.add(token);
+		}
+		if(Arrays.toString(tokeny.toArray(new String[tokeny.size()])).contains("bez")&&
+				(Arrays.toString(tokeny.toArray(new String[tokeny.size()])).contains("mięso")||
+						Arrays.toString(tokeny.toArray(new String[tokeny.size()])).contains("miesa")))
+			return true;
+		else
+			return false;
+	}
 	
 	public String[] parsuj (String wypowiedz) {
-		if(wypowiedz.equals("Poproszę pizzę bez mięsa"))
+		if(wege(wypowiedz))
 			wypowiedz="PizzaWegetariańska";
 		String[] slowa = wypowiedz.split(" ");
 		ArrayList<String> tokeny = new ArrayList<String>();
-		
 		PolishStemmer s = new PolishStemmer();
 		
 		for (String slowo : slowa){ 
@@ -71,7 +91,7 @@ public class Parser {
 				token = slowo.toLowerCase();
 			tokeny.add(token);
 		}
-		
+
 	    return tokeny.toArray(new String[tokeny.size()]);
 	}
 	
@@ -86,8 +106,8 @@ public class Parser {
 	
     public static final void main(String[] args) {
         try {
-        	//Parser p = new Parser();
-        	//p.parsuj("Chciałabym pizzę wegetariańską");
+        	Parser p = new Parser();
+        	p.parsuj("Chciałabym pizzę wegetariańską");
         
         } catch (Throwable t) {
             t.printStackTrace();
