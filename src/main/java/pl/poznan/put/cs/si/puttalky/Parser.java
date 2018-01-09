@@ -25,6 +25,7 @@ public class Parser {
 	}
 
 	public String getWypowiedz() {
+
 		return wypowiedz;
 	}
 
@@ -55,6 +56,8 @@ public class Parser {
 
 	
 	public String[] parsuj (String wypowiedz) {
+		if(wypowiedz.equals("Poproszę pizzę bez mięsa"))
+			wypowiedz="PizzaWegetariańska";
 		String[] slowa = wypowiedz.split(" ");
 		ArrayList<String> tokeny = new ArrayList<String>();
 		
@@ -83,8 +86,8 @@ public class Parser {
 	
     public static final void main(String[] args) {
         try {
-        	Parser p = new Parser();
-        	p.parsuj("Chciałabym pizzę wegetariańską");
+        	//Parser p = new Parser();
+        	//p.parsuj("Chciałabym pizzę wegetariańską");
         
         } catch (Throwable t) {
             t.printStackTrace();

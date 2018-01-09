@@ -44,6 +44,7 @@ rule "Podaj dodatki"
 			for (String uriKlasy : baza.dopasujPizze(slowo)) {
 				insert(new Fakt("pizza_propozycja", uriKlasy));
 		        uri.add(uriKlasy);
+		        System.out.println(slowo);
 		    }
 
 			for (String uriKlasy : baza.dopasujDodatek(slowo)) {
@@ -88,9 +89,9 @@ end
 rule "Bylo szukane po pizzy"
     when
 		Fakt(nazwa == "pizza_propozycja") &&
-        $pizza_propozycja : Fakt( nazwa == "pizza_propozycja")
+        $pizza_propozycja : Fakt(nazwa == "pizza_propozycja")
     then
-	    System.out.println("Polecam pizzę: "+$pizza_propozycja.getWartosc().split("#")[1]);
+	    System.out.println("Zaznaczam pizzę: "+$pizza_propozycja.getWartosc().split("#")[1]);
 end
 
 rule "Polecana pizza"
