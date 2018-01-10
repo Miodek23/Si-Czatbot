@@ -45,14 +45,29 @@ rule "Podaj dodatki"
 				insert(new Fakt("pizza_propozycja", uriKlasy+"asdf"));
 		        uri.add(uriKlasy);
 		    }
-
 			for (String uriKlasy : baza.dopasujDodatek(slowo)) {
 		        insert(new Fakt("dodatek", uriKlasy));
 		        uri.add(uriKlasy);
 		    }
 		}
-
+        String previousDodatek1="",previousDodatek2="";
+        int i=0;
         for (String slowo : parser.getSlowaKluczowe()){
+            if(i==0)
+                previousDodatek1=slowo;
+            if(i==1)
+                previousDodatek2=slowo;
+			i++;
+			//System.out.println(i);
+		    if(i>1){
+			    insert(new Fakt("pizza_propozycja", "PizzaWłasna"));
+			    if(i==2){
+			        System.out.println("Dodaje dodatek: "+previousDodatek1);
+			        System.out.println("Dodaje dodatek: "+previousDodatek2);
+			    }
+			    if(i>2)
+			        System.out.println("Dodaje dodatek: "+slowo);
+			}
         	insert(new Fakt("dodatek", slowo));
         }
 
@@ -84,6 +99,21 @@ rule "Podaj rodzaj ciasta"
 		
 		update(ciasto);
 end
+
+
+rule "Wlasna"
+    when
+        dodatek:Dodatek() &&
+		Fakt(nazwa == "pizza_propozycja") &&
+        $pizza_propozycja : Fakt( nazwa == "pizza_propozycja")
+
+    then
+    if($pizza_propozycja.getWartosc().equals("PizzaWłasna")){
+	        System.out.println("Zaznaczam pizzę własną.");
+	        retract(dodatek)
+	}
+end
+
 
 rule "Bylo szukane po pizzy"
     when
